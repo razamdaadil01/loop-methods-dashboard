@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loop Methods — Live Project Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Barlow+Condensed:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #050810;
+    --bg2:       #080d1a;
+    --bg3:       #0d1526;
+    --border:    rgba(56,189,248,0.12);
+    --border2:   rgba(56,189,248,0.25);
+    --cyan:      #38bdf8;
+    --cyan2:     #0ea5e9;
+    --green:     #22d3ee;
+    --accent:    #f97316;
+    --red:       #ef4444;
+    --yellow:    #fbbf24;
+    --mint:      #34d399;
+    --purple:    #a78bfa;
+    --text:      #e2e8f0;
+    --text2:     #94a3b8;
+    --text3:     #475569;
+    --glow:      0 0 20px rgba(56,189,248,0.15);
+    --glow2:     0 0 40px rgba(56,189,248,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Barlow Condensed', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(56,189,248,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(56,189,248,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Scan line effect */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: 0;
+    right: 0;
+    height: 200%;
+    background: linear-gradient(transparent 50%, rgba(56,189,248,0.015) 50%);
+    background-size: 100% 4px;
+    animation: scanlines 8s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  @keyframes scanlines {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(50%); }
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 2;
+    padding: 16px 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border2);
+    padding-bottom: 12px;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid var(--cyan);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(56,189,248,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(56,189,248,0.2), transparent);
+  }
+
+  .logo-mark span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cyan);
+    position: relative;
+    z-index: 1;
+  }
+
+  .org-name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+
+  .org-name span {
+    color: var(--cyan);
+  }
+
+  .tagline {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--mint);
+    letter-spacing: 1px;
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--mint);
+    box-shadow: 0 0 8px var(--mint);
+    animation: livePulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes livePulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .clock {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(56,189,248,0.4);
+  }
+
+  .date-str {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-align: right;
+  }
+
+  .refresh-timer {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 1px;
+  }
+
+  /* ── STAT CARDS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .stat-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .3s;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--cyan));
+    opacity: 0.7;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .stat-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--accent-color, var(--cyan));
+    line-height: 1;
+    font-family: 'Rajdhani', sans-serif;
+    text-shadow: 0 0 20px currentColor;
+    opacity: 0.9;
+  }
+
+  .stat-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  /* ── MAIN GRID ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    flex: 1;
+  }
+
+  /* ── TEAM SECTION ── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .member-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .3s, box-shadow .3s;
+    animation: cardIn .5s ease both;
+  }
+
+  .member-card:hover {
+    border-color: var(--border2);
+    box-shadow: var(--glow);
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .member-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .member-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .member-role {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .task-counts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .count-box {
+    background: var(--bg3);
+    border-radius: 6px;
+    padding: 6px 4px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+
+  .count-num {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .count-label {
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--bg3);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 100px;
+    overflow: hidden;
+  }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    background: var(--bg3);
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: .3px;
+    border-left: 2px solid;
+  }
+
+  .task-item.open   { border-left-color: var(--cyan); }
+  .task-item.done   { border-left-color: var(--mint); color: var(--text3); }
+  .task-item.overdue{ border-left-color: var(--red); }
+
+  .task-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── PROJECTS SECTION ── */
+  .section-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .project-row {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 12px;
+    transition: border-color .3s;
+  }
+
+  .project-row:hover {
+    border-color: var(--border2);
+  }
+
+  .project-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .project-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+
+  .project-bar-wrap {
+    width: 120px;
+  }
+
+  .project-bar {
+    height: 5px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .project-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1.2s ease;
+  }
+
+  .project-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    margin-top: 3px;
+    text-align: right;
+  }
+
+  .project-tasks-count {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .project-tasks-label {
+    font-size: 9px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .status-badge {
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+
+  .badge-active   { background: rgba(34,211,238,0.1); color: var(--green); border: 1px solid rgba(34,211,238,0.3); }
+  .badge-progress { background: rgba(251,191,36,0.1); color: var(--yellow); border: 1px solid rgba(251,191,36,0.3); }
+  .badge-done     { background: rgba(52,211,153,0.1); color: var(--mint); border: 1px solid rgba(52,211,153,0.3); }
+
+  /* ── LOADING / ERROR ── */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    flex-direction: column;
+    gap: 12px;
+    color: var(--text3);
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 2px solid var(--border);
+    border-top-color: var(--cyan);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error-box {
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    padding: 16px 20px;
+    color: var(--red);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  /* ── CONFIG PANEL ── */
+  .config-panel {
+    position: fixed;
+    top: 0; right: 0; bottom: 0;
+    width: 360px;
+    background: var(--bg2);
+    border-left: 1px solid var(--border2);
+    padding: 24px;
+    transform: translateX(100%);
+    transition: transform .3s ease;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .config-panel.open {
+    transform: translateX(0);
+  }
+
+  .config-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .config-group {
+    margin-bottom: 16px;
+  }
+
+  .config-label {
+    font-size: 11px;
+    color: var(--text3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .config-input {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    outline: none;
+    transition: border-color .2s;
+  }
+
+  .config-input:focus {
+    border-color: var(--cyan);
+  }
+
+  .config-btn {
+    width: 100%;
+    background: var(--cyan);
+    color: var(--bg);
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity .2s;
+  }
+
+  .config-btn:hover { opacity: 0.85; }
+
+  .config-help {
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.6;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .config-help a {
+    color: var(--cyan);
+    text-decoration: none;
+  }
+
+  .settings-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 99;
+    transition: border-color .2s, box-shadow .2s;
+    color: var(--text3);
+    font-size: 18px;
+  }
+
+  .settings-btn:hover {
+    border-color: var(--cyan);
+    box-shadow: 0 0 12px rgba(56,189,248,0.2);
+    color: var(--cyan);
+  }
+
+  /* ── MARQUEE (scrolling tasks) ── */
+  .marquee-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .marquee-wrap::before, .marquee-wrap::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 40px;
+    z-index: 2;
+  }
+
+  .marquee-wrap::before { left: 0; background: linear-gradient(90deg, var(--bg2), transparent); }
+  .marquee-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--bg2), transparent); }
+
+  .marquee-track {
+    display: flex;
+    gap: 40px;
+    animation: marquee 30s linear infinite;
+    white-space: nowrap;
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text2);
+    letter-spacing: .5px;
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .marquee-item .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+
+  /* COLORS */
+  .c-cyan   { color: var(--cyan); }
+  .c-mint   { color: var(--mint); }
+  .c-red    { color: var(--red); }
+  .c-yellow { color: var(--yellow); }
+  .c-purple { color: var(--purple); }
+  .c-accent { color: var(--accent); }
+
+  .no-data {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+    padding: 20px;
+    letter-spacing: 1px;
+  }
+
+  .corner-deco {
+    position: fixed;
+    width: 80px;
+    height: 80px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .corner-deco.tl { top: 0; left: 0; border-top: 2px solid var(--cyan); border-left: 2px solid var(--cyan); border-radius: 0 0 12px 0; opacity: .4; }
+  .corner-deco.tr { top: 0; right: 0; border-top: 2px solid var(--cyan); border-right: 2px solid var(--cyan); border-radius: 0 0 0 12px; opacity: .4; }
+  .corner-deco.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--cyan); border-left: 2px solid var(--cyan); border-radius: 0 12px 0 0; opacity: .4; }
+  .corner-deco.br { bottom: 0; right: 0; border-bottom: 2px solid var(--cyan); border-right: 2px solid var(--cyan); border-radius: 12px 0 0 0; opacity: .4; }
+</style>
+</head>
+<body>
+
+<div class="corner-deco tl"></div>
+<div class="corner-deco tr"></div>
+<div class="corner-deco bl"></div>
+<div class="corner-deco br"></div>
+
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark"><span>LM</span></div>
+      <div>
+        <div class="org-name">Loop <span>Methods</span></div>
+        <div class="tagline">Project Control Center</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div>
+        <div class="clock" id="clock">--:--:--</div>
+        <div class="date-str" id="dateStr">--- --, ----</div>
+      </div>
+      <div>
+        <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+        <div class="refresh-timer" id="refreshTimer">Next refresh in 30s</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card" style="--accent-color: var(--cyan)">
+      <div class="stat-label">Active Projects</div>
+      <div class="stat-value" id="statProjects">--</div>
+      <div class="stat-sub">in portal</div>
+    </div>
+    <div class="stat-card" style="--accent-color: var(--yellow)">
+      <div class="stat-label">Open Tasks</div>
+      <div class="stat-value" id="statOpen">--</div>
+      <div class="stat-sub">across all projects</div>
+    </div>
+    <div class="stat-card" style="--accent-color: var(--mint)">
+      <div class="stat-label">Closed Tasks</div>
+      <div class="stat-value" id="statDone">--</div>
+      <div class="stat-sub">completed</div>
+    </div>
+    <div class="stat-card" style="--accent-color: var(--purple)">
+      <div class="stat-label">Team Members</div>
+      <div class="stat-value" id="statMembers">--</div>
+      <div class="stat-sub">active</div>
+    </div>
+    <div class="stat-card" style="--accent-color: var(--accent)">
+      <div class="stat-label">Overall Progress</div>
+      <div class="stat-value" id="statProgress">--%</div>
+      <div class="stat-sub">avg completion</div>
+    </div>
+  </div>
+
+  <!-- SCROLLING MARQUEE -->
+  <div class="marquee-wrap" id="marqueeWrap" style="display:none">
+    <div class="marquee-track" id="marqueeTrack"></div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- LEFT: TEAM -->
+    <div>
+      <div class="section-title">Team Overview</div>
+      <div class="team-grid" id="teamGrid">
+        <div class="loading"><div class="spinner"></div><span style="font-family:JetBrains Mono;font-size:11px;letter-spacing:1px">FETCHING DATA...</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: PROJECTS -->
+    <div>
+      <div class="section-title">Active Projects</div>
+      <div class="project-list" id="projectList">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- SETTINGS BTN -->
+<div class="settings-btn" onclick="toggleConfig()" title="Configure API">⚙</div>
+
+<!-- CONFIG PANEL -->
+<div class="config-panel" id="configPanel">
+  <div class="config-title">⚙ API Configuration</div>
+
+  <div class="config-group">
+    <div class="config-label">Access Token</div>
+    <input class="config-input" id="cfgToken" type="password" placeholder="Paste your Zoho OAuth token here">
+    <div class="config-help">
+      Get from: <a href="https://api-console.zoho.in" target="_blank">api-console.zoho.in</a><br>
+      Scopes needed:<br>
+      ZohoProjects.portals.READ<br>
+      ZohoProjects.projects.READ<br>
+      ZohoProjects.tasks.READ<br>
+      ZohoProjects.users.READ
+    </div>
+  </div>
+
+  <div class="config-group">
+    <div class="config-label">Portal ID</div>
+    <input class="config-input" id="cfgPortal" type="text" value="60030700322" placeholder="Portal ID">
+    <div class="config-help">Loop Methods portal ID (pre-filled)</div>
+  </div>
+
+  <div class="config-group">
+    <div class="config-label">Zoho Domain</div>
+    <input class="config-input" id="cfgDomain" type="text" value="https://projectsapi.zoho.in/restapi" placeholder="API base URL">
+  </div>
+
+  <div class="config-group">
+    <div class="config-label">Refresh Interval (seconds)</div>
+    <input class="config-input" id="cfgRefresh" type="number" value="30" min="10">
+  </div>
+
+  <button class="config-btn" onclick="saveConfig()">CONNECT & LOAD DASHBOARD</button>
+  <button class="config-btn" style="background:var(--bg3);color:var(--text2);margin-top:6px" onclick="loadDemo()">LOAD DEMO DATA</button>
+
+  <div style="margin-top:16px">
+    <div class="config-label">Setup Guide</div>
+    <div class="config-help">
+      1. Go to api-console.zoho.in<br>
+      2. Create Client → Server-based<br>
+      3. Generate token with scopes above<br>
+      4. Paste token above and click Connect<br><br>
+      Note: Token expires in 1 hour.<br>
+      Use refresh token flow for permanent access.
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+let CONFIG = {
+  token:    localStorage.getItem('lm_token') || '',
+  portal:   localStorage.getItem('lm_portal') || '60030700322',
+  domain:   localStorage.getItem('lm_domain') || 'https://projectsapi.zoho.in/restapi',
+  refresh:  parseInt(localStorage.getItem('lm_refresh') || '30'),
+};
+
+let refreshInterval = null;
+let countdownVal = CONFIG.refresh;
+
+// Member colors
+const MEMBER_COLORS = [
+  { bg: 'rgba(56,189,248,0.15)', color: '#38bdf8' },
+  { bg: 'rgba(167,139,250,0.15)', color: '#a78bfa' },
+  { bg: 'rgba(52,211,153,0.15)', color: '#34d399' },
+  { bg: 'rgba(249,115,22,0.15)', color: '#f97316' },
+  { bg: 'rgba(251,191,36,0.15)', color: '#fbbf24' },
+  { bg: 'rgba(244,114,182,0.15)', color: '#f472b6' },
+];
+
+const PROJECT_COLORS = ['#38bdf8','#a78bfa','#34d399','#f97316','#fbbf24','#f472b6','#22d3ee'];
+
+// ── CLOCK ─────────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleTimeString('en-IN', { hour12: false });
+  document.getElementById('dateStr').textContent =
+    now.toLocaleDateString('en-IN', { weekday:'short', month:'short', day:'numeric', year:'numeric' });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ── COUNTDOWN ─────────────────────────────────────────────────────────────────
+function startCountdown() {
+  countdownVal = CONFIG.refresh;
+  clearInterval(refreshInterval);
+  refreshInterval = setInterval(() => {
+    countdownVal--;
+    document.getElementById('refreshTimer').textContent = `Next refresh in ${countdownVal}s`;
+    if (countdownVal <= 0) {
+      fetchDashboard();
+      countdownVal = CONFIG.refresh;
+    }
+  }, 1000);
+}
+
+// ── CONFIG PANEL ──────────────────────────────────────────────────────────────
+function toggleConfig() {
+  const p = document.getElementById('configPanel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) {
+    document.getElementById('cfgToken').value  = CONFIG.token;
+    document.getElementById('cfgPortal').value = CONFIG.portal;
+    document.getElementById('cfgDomain').value = CONFIG.domain;
+    document.getElementById('cfgRefresh').value= CONFIG.refresh;
+  }
+}
+
+function saveConfig() {
+  CONFIG.token   = document.getElementById('cfgToken').value.trim();
+  CONFIG.portal  = document.getElementById('cfgPortal').value.trim();
+  CONFIG.domain  = document.getElementById('cfgDomain').value.trim();
+  CONFIG.refresh = parseInt(document.getElementById('cfgRefresh').value) || 30;
+  localStorage.setItem('lm_token',   CONFIG.token);
+  localStorage.setItem('lm_portal',  CONFIG.portal);
+  localStorage.setItem('lm_domain',  CONFIG.domain);
+  localStorage.setItem('lm_refresh', CONFIG.refresh);
+  document.getElementById('configPanel').classList.remove('open');
+  fetchDashboard();
+  startCountdown();
+}
+
+// ── ZOHO API ──────────────────────────────────────────────────────────────────
+async function zohoGet(path) {
+  const res = await fetch(`${CONFIG.domain}${path}`, {
+    headers: {
+      'Authorization': `Zoho-oauthtoken ${CONFIG.token}`,
+      'Content-Type':  'application/json',
+    }
+  });
+  if (!res.ok) throw new Error(`API Error ${res.status}: ${res.statusText}`);
+  return res.json();
+}
+
+async function fetchDashboard() {
+  if (!CONFIG.token) { loadDemo(); return; }
+  try {
+    // Fetch projects
+    const projData = await zohoGet(`/portal/${CONFIG.portal}/projects/`);
+    const projects = projData.projects || [];
+
+    // Take all projects — no status filter needed
+    const activeProjects = projects.slice(0, 10);
+    let allTasks = [];
+    let memberMap = {};
+
+    for (const proj of activeProjects) {
+      try {
+        const projId = proj.id_string || String(proj.id);
+        const taskData = await zohoGet(`/portal/${CONFIG.portal}/projects/${projId}/tasks/`);
+        const tasks = taskData.tasks || [];
+        // Update project open/closed counts from real task data
+        proj._openCount   = tasks.filter(t => !t.completed).length;
+        proj._closedCount = tasks.filter(t =>  t.completed).length;
+        tasks.forEach(t => {
+          t._project = proj.name;
+          t._projectKey = proj.key;
+          allTasks.push(t);
+          // Zoho API confirmed format: t.details.owners[].zpuid + full_name
+          const owners = t.details?.owners || [];
+          owners.forEach(o => {
+            const uid  = o.zpuid;
+            const name = o.full_name || o.name || '';
+            if (!uid || !name || name === 'Unassigned User') return;
+            if (!memberMap[uid]) {
+              memberMap[uid] = { id: uid, name, open: 0, done: 0, tasks: [] };
+            }
+            if (t.completed) {
+              memberMap[uid].done++;
+            } else {
+              memberMap[uid].open++;
+              if (memberMap[uid].tasks.length < 4) {
+                memberMap[uid].tasks.push({ name: t.name, project: proj.name });
+              }
+            }
+          });
+        });
+      } catch(e) { console.warn('Task fetch error:', proj.name, e); }
+    }
+
+    renderDashboard({ projects: activeProjects, tasks: allTasks, members: Object.values(memberMap) });
+
+  } catch(err) {
+    showError(err.message);
+  }
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderDashboard({ projects, tasks, members }) {
+  const openTasks   = tasks.filter(t => !t.completed).length;
+  const closedTasks = tasks.filter(t => t.completed).length;
+  const avgPct      = projects.length
+    ? Math.round(projects.reduce((s, p) => s + (p.percent_complete || 0), 0) / projects.length)
+    : 0;
+
+  document.getElementById('statProjects').textContent = projects.length;
+  document.getElementById('statOpen').textContent     = openTasks;
+  document.getElementById('statDone').textContent     = closedTasks;
+  document.getElementById('statMembers').textContent  = members.length;
+  document.getElementById('statProgress').textContent = avgPct + '%';
+
+  renderTeam(members);
+  renderProjects(projects);
+  renderMarquee(tasks.filter(t => !t.completed));
+}
+
+function renderTeam(members) {
+  const grid = document.getElementById('teamGrid');
+  if (!members.length) {
+    grid.innerHTML = '<div class="no-data">No assigned tasks found.<br>Assign tasks in Zoho Projects.</div>';
+    return;
+  }
+
+  grid.innerHTML = members.slice(0, 6).map((m, i) => {
+    const col   = MEMBER_COLORS[i % MEMBER_COLORS.length];
+    const total = m.open + m.done;
+    const pct   = total ? Math.round((m.done / total) * 100) : 0;
+    const initials = m.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+
+    const taskItems = m.tasks.slice(0, 3).map(t =>
+      `<div class="task-item open">
+        <div class="task-dot" style="background:${col.color}"></div>
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.name}</span>
+      </div>`
+    ).join('');
+
+    return `
+      <div class="member-card" style="animation-delay:${i * 0.08}s">
+        <div class="member-header">
+          <div class="avatar" style="background:${col.bg}; color:${col.color}; box-shadow: 0 0 12px ${col.bg}">
+            ${initials}
+          </div>
+          <div>
+            <div class="member-name">${m.name.split(' ')[0]}</div>
+            <div class="member-role">${m.name.split(' ').slice(1).join(' ') || 'Team Member'}</div>
+          </div>
+        </div>
+        <div class="task-counts">
+          <div class="count-box">
+            <div class="count-num" style="color:${col.color}">${m.open}</div>
+            <div class="count-label">Open</div>
+          </div>
+          <div class="count-box">
+            <div class="count-num" style="color:var(--mint)">${m.done}</div>
+            <div class="count-label">Done</div>
+          </div>
+          <div class="count-box">
+            <div class="count-num" style="color:var(--text2)">${pct}%</div>
+            <div class="count-label">Done%</div>
+          </div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${pct}%; background:${col.color}"></div>
+        </div>
+        <div class="task-list" style="margin-top:8px">
+          ${taskItems || '<div class="no-data" style="padding:8px 0;font-size:11px">No open tasks</div>'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderProjects(projects) {
+  const list = document.getElementById('projectList');
+  if (!projects.length) {
+    list.innerHTML = '<div class="no-data">No active projects found.</div>';
+    return;
+  }
+
+  list.innerHTML = projects.slice(0, 10).map((p, i) => {
+    const color  = PROJECT_COLORS[i % PROJECT_COLORS.length];
+    const pct    = p.percent_complete || 0;
+    const open   = p._openCount   ?? p.tasks?.open_count   ?? 0;
+    const closed = p._closedCount ?? p.tasks?.closed_count ?? 0;
+    const total  = open + closed;
+    const badge  = pct >= 100
+      ? '<span class="status-badge badge-done">DONE</span>'
+      : p.status === 'active'
+        ? '<span class="status-badge badge-active">ACTIVE</span>'
+        : '<span class="status-badge badge-progress">IN PROG</span>';
+
+    return `
+      <div class="project-row">
+        <div>
+          <div class="project-name" style="color:${color}">${p.name}</div>
+          <div class="project-key">${p.key || ''} · ${total} tasks</div>
+        </div>
+        <div class="project-bar-wrap">
+          <div class="project-bar">
+            <div class="project-bar-fill" style="width:${pct}%; background:${color}"></div>
+          </div>
+          <div class="project-pct">${pct}%</div>
+        </div>
+        <div>
+          <div class="project-tasks-count" style="color:${color}">${open}</div>
+          <div class="project-tasks-label">open</div>
+        </div>
+        ${badge}
+      </div>`;
+  }).join('');
+}
+
+function renderMarquee(openTasks) {
+  const wrap  = document.getElementById('marqueeWrap');
+  const track = document.getElementById('marqueeTrack');
+  if (!openTasks.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  const items = openTasks.slice(0, 20).map(t =>
+    `<div class="marquee-item">
+      <div class="dot" style="background:var(--cyan)"></div>
+      <span style="color:var(--text3)">${t._projectKey || ''}</span>
+      <span>${t.name}</span>
+    </div>`
+  ).join('');
+
+  track.innerHTML = items + items; // double for seamless loop
+}
+
+function showError(msg) {
+  document.getElementById('teamGrid').innerHTML =
+    `<div class="error-box" style="grid-column:1/-1">
+      ⚠ API Error: ${msg}<br><br>
+      Click ⚙ to configure your Zoho OAuth token.<br>
+      Or click "Load Demo Data" to preview the dashboard.
+    </div>`;
+  document.getElementById('projectList').innerHTML = '';
+}
+
+// ── DEMO DATA ─────────────────────────────────────────────────────────────────
+function loadDemo() {
+  document.getElementById('configPanel').classList.remove('open');
+
+  const demoData = {
+    projects: [
+      { name: 'Aquira Access', key: 'HR-54', percent_complete: 45, status: 'active', tasks: { open_count: 10, closed_count: 4 } },
+      { name: 'Mandirgram', key: 'HR-53', percent_complete: 72, status: 'active', tasks: { open_count: 8, closed_count: 21 } },
+      { name: 'RebookIt (New)', key: 'HR-52', percent_complete: 18, status: 'active', tasks: { open_count: 107, closed_count: 24 } },
+      { name: 'Poshan Saathi', key: 'HR-47', percent_complete: 0, status: 'active', tasks: { open_count: 161, closed_count: 0 } },
+      { name: 'HRMS', key: 'HR-49', percent_complete: 52, status: 'active', tasks: { open_count: 179, closed_count: 200 } },
+      { name: 'Prescription RX', key: 'HR-51', percent_complete: 30, status: 'active', tasks: { open_count: 16, closed_count: 0 } },
+    ],
+    members: [
+      { id: '1', name: 'Aadil Raza', open: 7, done: 12, tasks: [
+        { name: 'BRD v1.1 Update — Aquira Access', project: 'Aquira Access' },
+        { name: 'Sprint Plan — Mandirgram', project: 'Mandirgram' },
+        { name: 'UI Design Review', project: 'RebookIt' },
+      ]},
+      { id: '2', name: 'Akshay Kumar', open: 10, done: 8, tasks: [
+        { name: 'AWS Infrastructure Setup', project: 'Aquira Access' },
+        { name: 'Backend Deployment — EC2', project: 'Aquira Access' },
+        { name: 'Rate Limiter Implementation', project: 'Aquira Access' },
+      ]},
+      { id: '3', name: 'Pankaj Chaturvedi', open: 5, done: 15, tasks: [
+        { name: 'axe-core Scanner Integration', project: 'Aquira Access' },
+        { name: 'PDF Generation Module', project: 'Aquira Access' },
+        { name: 'DB Schema Review', project: 'Mandirgram' },
+      ]},
+      { id: '4', name: 'Kaustubh Trivedi', open: 4, done: 6, tasks: [
+        { name: 'Product Roadmap Review', project: 'HRMS' },
+        { name: 'Sprint Planning Q2', project: 'Poshan Saathi' },
+      ]},
+      { id: '5', name: 'Abhishek', open: 6, done: 9, tasks: [
+        { name: 'CloudWatch Monitoring Setup', project: 'Aquira Access' },
+        { name: 'SSL Certificate Config', project: 'Aquira Access' },
+      ]},
+      { id: '6', name: 'Rajesh Rishi', open: 3, done: 20, tasks: [
+        { name: 'Architecture Review', project: 'HRMS' },
+        { name: 'Code Review — Sprint 2', project: 'RebookIt' },
+      ]},
+    ],
+    tasks: [
+      { name: 'AWS Infrastructure Setup', _projectKey: 'HR-54', completed: false },
+      { name: 'Rate Limiter Implementation', _projectKey: 'HR-54', completed: false },
+      { name: 'Comment Out Tier Enforcement', _projectKey: 'HR-54', completed: false },
+      { name: 'BRD v1.1 Finalization', _projectKey: 'HR-54', completed: true },
+      { name: 'Puja Booking Flow', _projectKey: 'HR-53', completed: false },
+      { name: 'Karma System Module', _projectKey: 'HR-53', completed: false },
+      { name: 'Refer & Earn Module', _projectKey: 'HR-52', completed: false },
+      { name: 'Payment Gateway Integration', _projectKey: 'HR-52', completed: false },
+    ]
+  };
+
+  document.getElementById('statProjects').textContent = demoData.projects.length;
+  document.getElementById('statOpen').textContent     = demoData.members.reduce((s,m) => s+m.open, 0);
+  document.getElementById('statDone').textContent     = demoData.members.reduce((s,m) => s+m.done, 0);
+  document.getElementById('statMembers').textContent  = demoData.members.length;
+  const avgPct = Math.round(demoData.projects.reduce((s,p) => s+(p.percent_complete||0),0) / demoData.projects.length);
+  document.getElementById('statProgress').textContent = avgPct + '%';
+
+  renderTeam(demoData.members);
+  renderProjects(demoData.projects);
+  renderMarquee(demoData.tasks.filter(t => !t.completed));
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+if (CONFIG.token) {
+  fetchDashboard();
+} else {
+  loadDemo(); // Show demo by default
+}
+startCountdown();
+</script>
+
+</body>
+</html>
